@@ -1,6 +1,9 @@
 import express from 'express';
-import bizAdmin from './bizAdmin.js';
-import endUser from './endUser.js';
+import bizAdmin, {
+  bizAdminMiddlewareGuard,
+  bizAdminResetPassword,
+} from './bizAdmin.js';
+import endUser, { endUserGuard, endUserResetPassword } from './endUser.js';
 
 const users = express.Router();
 
@@ -34,7 +37,12 @@ users.put(
   // Autorization, based on RBAC
   userInfoChecker,
   // --- New design for RBAC reset password ---
-  resetByRoles
+  // resetByRoles
+  bizAdminMiddlewareGuard,
+  bizAdminResetPassword
 );
+
+// another route.
+users.put('/reset-password', endUserResetPassword);
 
 export default users;
