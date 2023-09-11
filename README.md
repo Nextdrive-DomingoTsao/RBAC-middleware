@@ -34,6 +34,36 @@ For end user
 > 中文解釋：用 biz::admin, PF::admin, endUser 等 router 來去做未來的 RBAC middleware 分流，並將所有這些較小的 router 放在一起，透過每次進入小 router 後的 `Role Guard` 來去阻擋非授權的用戶使用到這些 middleware
 
 優點：相較於拆分 endpoint，結合在同一個 endpoint，並透過 RBAC model 做區分，幫助未來在做 RBAC model based 的功能擴展時，可以更 **Open-Close Principle**.
+缺點：透過 `next('router')` & 分不同 router 的方式會讓所有的 endpoint 都需要額外包 router，會變成耦合 router (不好管理 endpoint)
+
+3. Place biz::admin, PF::admin, endUser router together, and use `next('route')` to skip the whole router if role / permission does not match
+  
+優點：擁有第二個解的優勢，也解決其缺點，透過 next('route') 的方法跳到同個 endpoint 的 middleware（router 內會有多個同個 originUrl 的 endpoint）
+```js
+function routeJumper(req, res, next) {
+  next('route');
+}
+
+users.put(
+  '/reset-password',
+  // check whether token is in header
+  checkAuthTokenInHeader,
+  // check body, throw error if null
+  checkBodyIsEmptyOrNot,
+  // Authentication
+  wrappedAuthVerifyAccessToken,
+  // Autorization, based on RBAC
+  userInfoChecker,
+  // --- New design for RBAC reset password ---
+  routeJumper
+);
+
+// biz:admin route
+users.put('/reset-password', bizAdminMiddlewareGuard, bizAdminResetPassword);
+
+// end user route.
+users.put('/reset-password', endUserGuard, endUserResetPassword);
+```
 
 ### Key point to the solution
 
