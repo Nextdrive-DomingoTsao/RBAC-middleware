@@ -3,7 +3,6 @@ import express from 'express';
 const endUser = express.Router();
 
 export function endUserGuard(req, res, next) {
-  console.log('here');
   if (req.body.role !== 'endUserRole') {
     return next(new Error('even not a end user'));
   }
