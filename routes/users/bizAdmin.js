@@ -17,14 +17,13 @@ export function bizAdminGuardRouteGuard(req, res, next) {
 }
 
 export function bizAdminMiddlewareGuard(req, res, next) {
-  // const role = (...) ? xxx : ooo // check body --> role
   if (req.body.role !== 'bizAdminRole') {
     /* 
-    Solution: next('router'):
+    Solution: next('route'):
       make all the middleware at this router (a.k.a bizAdmin here) be bypassed / skipped.
       then we will go to end-user reset password.
-      next('router') in Express API guide: 
-      https://expressjs.com/en/5x/api.html#next('router'):~:text=following%20example%20illustrates-,next(%27router%27),-usage.
+      next('route') in Express API guide: 
+      https://expressjs.com/en/guide/routing.html#:~:text=might%20invoke%20next(%27-,route,-%27)%20to%20bypass
     */
     return next('route');
   }
@@ -44,17 +43,6 @@ function bizAdminMiddlewareTwo(req, res, next) {
   next();
 }
 export function bizAdminResetPassword(req, res, next) {
-  if (req.body.role !== 'bizAdminRole') {
-    console.log('next');
-    /* 
-    Solution: next('router'):
-      make all the middleware at this router (a.k.a bizAdmin here) be bypassed / skipped.
-      then we will go to end-user reset password.
-      next('router') in Express API guide: 
-      https://expressjs.com/en/5x/api.html#next('router'):~:text=following%20example%20illustrates-,next(%27router%27),-usage.
-    */
-    return next('route');
-  }
   console.log('route to biz admin reset password');
   return res.status(200).json({
     msg: 'biz admin reset user password',
