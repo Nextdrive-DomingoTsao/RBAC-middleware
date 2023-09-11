@@ -17,6 +17,7 @@ export function bizAdminGuardRouteGuard(req, res, next) {
 }
 
 export function bizAdminMiddlewareGuard(req, res, next) {
+  // const role = (...) ? xxx : ooo // check body --> role
   if (req.body.role !== 'bizAdminRole') {
     /* 
     Solution: next('router'):
@@ -25,7 +26,7 @@ export function bizAdminMiddlewareGuard(req, res, next) {
       next('router') in Express API guide: 
       https://expressjs.com/en/5x/api.html#next('router'):~:text=following%20example%20illustrates-,next(%27router%27),-usage.
     */
-    return next();
+    return next('route');
   }
   return next();
 }
