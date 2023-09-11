@@ -24,7 +24,10 @@ function userInfoChecker(req, res, next) {
 }
 
 // ---------------- Solution start from here ------------------
-const resetByRoles = [bizAdmin, endUser];
+
+function routeJumper(req, res, next) {
+  next('route');
+}
 
 users.put(
   '/reset-password',
@@ -37,12 +40,13 @@ users.put(
   // Autorization, based on RBAC
   userInfoChecker,
   // --- New design for RBAC reset password ---
-  // resetByRoles
-  bizAdminMiddlewareGuard,
-  bizAdminResetPassword
+  routeJumper
 );
 
-// another route.
-users.put('/reset-password', endUserResetPassword);
+// biz:admin route
+users.put('/reset-password', bizAdminMiddlewareGuard, bizAdminResetPassword);
+
+// end user route.
+users.put('/reset-password', endUserGuard, endUserResetPassword);
 
 export default users;
